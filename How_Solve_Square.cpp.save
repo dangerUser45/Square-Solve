@@ -25,17 +25,16 @@ int main (void)
  double x1 = 0, x2 = 0;
  int roots = 0;
  printf("¬ведите числовые коэффициенты квадратного уравнени€:\n ");
-
+ 
 
  while (1)
   {
     Scan_Coeff  (&a, &b, &c);
-    if
     roots = Solve_common (a, b, c, &x1, &x2);
     Unit_f (1, 5, 0, 0, 1, 0, 0);
     Print_Solutions (roots, &x1, &x2);
 
-    printf("¬ведите коэффициенты ещЄ раз;\n");
+    printf("¬ведите коэффициенты ещЄ раз:\n");
     printf("¬ведите \"0\" дл€ выхода и \"1\" дл€ продолжени€: ");
   }
 
