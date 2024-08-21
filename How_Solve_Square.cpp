@@ -14,7 +14,7 @@ int Solve_Square (double a, double b, double c, double *x1, double *x2);
 void Del_Minus (double *x1);
 void Unit_f (int n_Test, double a, double b, double c, int roots_right, double x1_right, double x2_right);
 int Compare_doubles (double q, double r);
-void Scan_Coeff  (double *a, double *b, double *c);
+int Scan_Coeff (double *a, double *b, double *c);
 
 
 
@@ -24,19 +24,24 @@ int main (void)
  double a = 0, b = 0, c = 0;
  double x1 = 0, x2 = 0;
  int roots = 0;
- printf("Введите числовые коэффициенты квадратного уравнения:\n ");
-
 
  while (1)
   {
-    Scan_Coeff  (&a, &b, &c);
-    if
-    roots = Solve_common (a, b, c, &x1, &x2);
-    Unit_f (1, 5, 0, 0, 1, 0, 0);
-    Print_Solutions (roots, &x1, &x2);
+    printf("Введите коэффициенты квадратного уравнения: ");
+    if (Scan_Coeff  (&a, &b, &c) == 3)
+     {
+       roots = Solve_common (a, b, c, &x1, &x2);
+       Unit_f (1, 5, 0, 0, 1, 0, 0);
+       Print_Solutions (roots, &x1, &x2);
+       printf("Введите коэффициенты ещё раз;\n");
+     }
 
-    printf("Введите коэффициенты ещё раз;\n");
-    printf("Введите \"0\" для выхода и \"1\" для продолжения: ");
+     else
+      {
+        printf("Вы ввели не то, попробуйте ещё раз");
+        continue;
+      }
+
   }
 
  printf("Программа завершена");
@@ -97,13 +102,13 @@ int Solve_Line (double b, double c, double *x1, double *x2)
         break;
 
        case 1:
-        Del_Minus (&x1);
+        Del_Minus (x1);
         printf("Уравнение имеет 1 корень = %lg\n", *x1);
         break;
 
        case 2:
-        Del_Minus (&x1);
-        Del_Minus (&x2);
+        Del_Minus (x1);
+        Del_Minus (x2);
         printf("Уравнение имеет 2 корня = %lg и %lg\n",*x1, *x2);
         break;
 
@@ -128,7 +133,7 @@ int Solve_Line (double b, double c, double *x1, double *x2)
  void Unit_f (int n_Test, double a, double b, double c, int roots_right, double x1_right, double x2_right)
  {
    double x1 = 0, x2 = 0;
-   int roots = Func (a, b, c, &x1, &x2);
+   int roots = Solve_common (a, b, c, &x1, &x2);
    if (roots != roots_right || Compare_doubles(x1, x1_right)== 0 || Compare_doubles(x2, x2_right)== 0)
    printf ("Ошибка №%d: a = %lg, b = %lg, c = %lg, roots = %d, x1 = %lg, x2 = %lg"
            "Правильные данные: roots_right = %d, x1_right = %lg, x2_right = %lg",
@@ -144,7 +149,7 @@ int Compare_doubles (double q, double r)
     return 0;
 }
 
- void Scan_Coeff  (double *a, double *b, double *c)
+ int Scan_Coeff  (double *a, double *b, double *c)
  {
-  scanf("%lf %lf %lf", a, b, c);
+   return scanf("%lf %lf %lf", a, b, c);
  }
