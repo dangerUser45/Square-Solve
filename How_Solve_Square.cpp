@@ -24,23 +24,23 @@ struct ROOTS
 {
    double x1 = 0,
           x2 = 0;
-   int n_roots = 0;
+   int roots = 0;
 
 };
 
 
 
-  int NOL = 0;
-  int INF = -1;
+const  int NOL = 0;
+const  int INF = -1;
 
 const double epsilon = 1e-12;
 
-int Solve_common (double a, double b, double c, double *x1, double *x2);
-void Print_Solutions (int roots, double *x1, double *x2);
-int Solve_Line (double b, double c, double *x1, double *x2);
-int Solve_Square (double a, double b, double c, double *x1, double *x2);
+int Solve_common (COEFFICIENT coef_formal, ROOTS *root_formal_common.x1, ROOTS *root_formal_common.x2);
+void Print_Solutions (ROOTS printr.roots, ROOT *printr.x1, ROOT *printr.x1 );
+int Solve_Line (COEFFICIENT coef_formal.b, COEFFICIENT coef_formal.c, ROOTS *qwerty.x1, ROOTS *qwerty.x2);
+int Solve_Square (COEFFICIENT coef_formal, ROOTS *qwerty.x1, ROOTS *qwerty.x2);
 void Del_Minus (double *x1);
-void Unit_f (int n_Test, double a, double b, double c, int roots_right, double x1_right, double x2_right);
+void Unit_f (STRUCT_FOR_TEST test);
 int Compare_doubles (double q, double r);
 
 
@@ -51,6 +51,10 @@ int main (void)
  double a = 0, b = 0, c = 0;
  double x1 = 0, x2 = 0;
  int roots = 0, input_code = -1;
+
+ STRUCT_FOR_TEST test1;
+ ROOTS root_and_q;
+
 
 while (1)
  {
@@ -74,11 +78,12 @@ while (1)
 
 
     printf("Введите коэффициенты квадратного уравнения: ");
-    if (scanf("%lf %lf %lf", &a, &b, &c) == 3)
+    if (scanf("%lf %lf %lf", &coef.a, &coef.b, &coef.c) == 3)
      {
-       roots = Solve_common (a, b, c, &x1, &x2);
-       Unit_f (1, 5, 0, 0, 1, 0, 0);
-       Print_Solutions (roots, &x1, &x2);
+       roots = Solve_common (coef, &root_and_q.x1, &root_and_q.x2);
+       root_and_q.roots = roots;
+       /*Unit_f (1, 5, 0, 0, 1, 0, 0);*/
+       Print_Solutions (root_and_q.roots, &root_and_q.x1, &root_and_q.x2);
      }
 
      else
@@ -94,38 +99,38 @@ while (1)
   return 0;
 }
 
-int Solve_common (const double a, double b, double c, double *x1, double *x2)
+int Solve_common (COEFFICIENT coef_formal, ROOTS *root_formal_common.x1, ROOTS *root_formal_common.x2)
 {
     int roots = 0;
-    if (fabs(a) < epsilon)                       //a == 0
-      roots = Solve_Line(b, c, x1, x2);
-    else                                         //a != 0
-      roots = Solve_Square(a, b, c, x1, x2);
+    if (Compare_doubles(coef_formal.a, epsilon))                                                     //a == 0
+      roots = Solve_Line(coef_formal.b, coef_formal.c, root_formal_common.x1, root_formal_common.x2);
+    else                                                                       //a != 0
+      roots = Solve_Square(coef_formal, root_formal_common.x1, root_formal_common.x2);
 
     return roots;
 }
 
-int Solve_Line (double b, double c, double *x1, double *x2)
+int Solve_Line (COEFFICIENT coef_formal.b, COEFFICIENT coef_formal.c, ROOTS *qwerty.x1, ROOTS *qwerty.x2)
 {
-      if (Compare_doubles(b, epsilon)) //b == 0
+      if (Compare_doubles(coef_formal.b, epsilon)) //b == 0
         {
-         return (fabs(c) < epsilon) ? INF : NOL;
+         return (Compare_doubles(coef_formal.c, epsilon)) ? INF : NOL;
         }
       else
        {
-         *x1 = *x2 = -c/b;
+         (*qwerty).x1 = (*qwerty).x2 = -c/b;
          return 1;
        }
 }
 
- int Solve_Square (double a, double b, double c, double *x1, double *x2)
+ int Solve_Square (COEFFICIENT coef_formal, ROOTS *qwerty.x1, ROOTS *qwerty.x2)
 
  {
-   const double D = (b*b) - (4*a*c);
+   double D = (b*b) - (4*a*c);
 
-   if (Compare_doubles(b, epsilon)) //D == 0
+   if (Compare_doubles(D, epsilon)) //D == 0
     {
-      *x1 = *x2 = (-b) /(2*a);
+      (*qwerty).x1 = (*qwerty).x2 = (-b) /(2*a);
       return 1;
     }
 
@@ -133,30 +138,30 @@ int Solve_Line (double b, double c, double *x1, double *x2)
       return NOL;
    else
      {
-       *x1 = (-b + sqrt(D)) / (2*a);
-       *x2 = (-b - sqrt(D)) / (2*a);
+       (*qwerty).x1 = (-coef_formal.b + sqrt(D)) / (2*coef_formal.a);
+       (*qwerty).x2 = (-coef_formal.b - sqrt(D)) / (2*coef_formal.a);
        return 2;
      }
  }
 
 
- void Print_Solutions (int roots, double *x1, double *x2)
+ void Print_Solutions (ROOTS printr.roots, ROOT *printr.x1, ROOT *printr.x1)
  {
-   switch (roots)
+   switch (printr.roots)
     {
        case NOL:
         printf ("\nУравнение не имеет корней\n");
         break;
 
        case 1:
-        Del_Minus (x1);
-        printf("\nУравнение имеет 1 корень = %lg\n", *x1);
+        Del_Minus (printr.x1);
+        printf("\nУравнение имеет 1 корень = %lg\n", (*printr).x1);
         break;
 
        case 2:
-        Del_Minus (x1);
-        Del_Minus (x2);
-        printf("\nУравнение имеет 2 корня = %lg и %lg\n",*x1, *x2);
+        Del_Minus (printr.x1);
+        Del_Minus (printr.x2);
+        printf("\nУравнение имеет 2 корня = %lg и %lg\n",(*printr).x1, (*printr).x2);
         break;
 
       case INF:
@@ -172,8 +177,9 @@ int Solve_Line (double b, double c, double *x1, double *x2)
 
   void Del_Minus (double *x1)
   {
-    if (fabs(*x1)<= epsilon)
+    if (Compare_doubles(*x1, epsilon))
     *x1 = 0;
+
   }
 
 
@@ -192,6 +198,5 @@ int Compare_doubles (double q, double r)
 {
   if (fabs(q - r) <= epsilon )
     return 1;
-  else
-    return 0;
+  return 0;
 }
