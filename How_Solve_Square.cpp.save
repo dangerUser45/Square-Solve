@@ -13,7 +13,6 @@ struct COEFFICIENT
 struct STRUCT_FOR_TEST
  {
     int n_Test = 0;
-    struct COEFFICIENT coef;
     int roots_right = 0;
     double x1_right = 0,
            x2_right = 0;
@@ -35,12 +34,12 @@ const  int INF = -1;
 
 const double epsilon = 1e-12;
 
-int Solve_common (COEFFICIENT coef_formal, ROOTS *root_formal_common.x1, ROOTS *root_formal_common.x2);
-void Print_Solutions (ROOTS printr.roots, ROOT *printr.x1, ROOT *printr.x1 );
-int Solve_Line (COEFFICIENT coef_formal.b, COEFFICIENT coef_formal.c, ROOTS *qwerty.x1, ROOTS *qwerty.x2);
-int Solve_Square (COEFFICIENT coef_formal, ROOTS *qwerty.x1, ROOTS *qwerty.x2);
+void Solve_common (COEFFICIENT coef_formal, ROOTS *root_formal_common);
+void Print_Solutions (ROOTS *printr);
+void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line);
+void Solve_Square (COEFFICIENT coef_formal_s, ROOTS *root_sqr);
 void Del_Minus (double *x1);
-void Unit_f (STRUCT_FOR_TEST test);
+void Unit_Testing (STRUCT_FOR_TEST *adress_r_t, COEFFICIENT coef_test, ROOTS roots_test);
 int Compare_doubles (double q, double r);
 
 
@@ -48,13 +47,11 @@ int Compare_doubles (double q, double r);
 int main (void)
 {
  setlocale(LC_ALL, "Russian");
- double a = 0, b = 0, c = 0;
- double x1 = 0, x2 = 0;
- int roots = 0, input_code = -1;
+ int input_code = -1;
 
- STRUCT_FOR_TEST test1;
+ STRUCT_FOR_TEST run_test;
  ROOTS root_and_q;
-
+ COEFFICIENT coef;
 
 while (1)
  {
@@ -80,10 +77,9 @@ while (1)
     printf("Введите коэффициенты квадратного уравнения: ");
     if (scanf("%lf %lf %lf", &coef.a, &coef.b, &coef.c) == 3)
      {
-       roots = Solve_common (coef, &root_and_q.x1, &root_and_q.x2);
-       root_and_q.roots = roots;
-       Unit_f (1, 5, 0, 0, 1, 0, 0);
-       Print_Solutions (root_and_q.roots, &root_and_q.x1, &root_and_q.x2);
+       Solve_common (coef, &root_and_q);
+       Unit_Testing (&run_test, coef, root_and_q );
+       Print_Solutions (&root_and_q);
      }
 
      else
@@ -99,68 +95,68 @@ while (1)
   return 0;
 }
 
-int Solve_common (COEFFICIENT coef_formal, ROOTS *root_formal_common.x1, ROOTS *root_formal_common.x2)
+void Solve_common (COEFFICIENT coef_formal, ROOTS *root_formal_common)
 {
-    int roots = 0;
-    if (Compare_doubles(coef_formal.a, epsilon))                                                     //a == 0
-      roots = Solve_Line(coef_formal.b, coef_formal.c, root_formal_common.x1, root_formal_common.x2);
+    if (Compare_doubles(coef_formal.a, 0))                                                     //a == 0
+      Solve_Line(coef_formal, root_formal_common);
     else                                                                       //a != 0
-      roots = Solve_Square(coef_formal, root_formal_common.x1, root_formal_common.x2);
-
-    return roots;
+      Solve_Square(coef_formal, root_formal_common);
 }
 
-int Solve_Line (COEFFICIENT coef_formal.b, COEFFICIENT coef_formal.c, ROOTS *qwerty.x1, ROOTS *qwerty.x2)
+void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
 {
-      if (Compare_doubles(coef_formal.b, epsilon)) //b == 0
+      if (Compare_doubles(coef_formal_l.b, 0)) //b == 0
         {
-         return (Compare_doubles(coef_formal.c, epsilon)) ? INF : NOL;
+         if (Compare_doubles(coef_formal_l.c, 0) == 1)
+           (*root_line).roots = INF;               //return INF;
+         else
+           (*root_line).roots = NOL;               //return NOL;
         }
       else
        {
-         (*qwerty).x1 = (*qwerty).x2 = -c/b;
-         return 1;
+         (*root_line).x1 = (*root_line).x2 = -coef_formal_l.c/coef_formal_l.b;
+         (*root_line).roots = 1;                     //return 0;
        }
 }
 
- int Solve_Square (COEFFICIENT coef_formal, ROOTS *qwerty.x1, ROOTS *qwerty.x2)
+ void Solve_Square (COEFFICIENT coef_formal_s, ROOTS *root_sqr)
 
  {
-   double D = (b*b) - (4*a*c);
+   double D = (coef_formal_s.b * coef_formal_s.b) - (4 * coef_formal_s.a * coef_formal_s.c);
 
-   if (Compare_doubles(D, epsilon)) //D == 0
+   if (Compare_doubles(D, 0)) //D == 0
     {
-      (*qwerty).x1 = (*qwerty).x2 = (-b) /(2*a);
-      return 1;
+      (*root_sqr).x1 = (*root_sqr).x2 = (-coef_formal_s.b) /(2*coef_formal_s.a);
+      (*root_sqr).roots = 2;       //return 1;
     }
 
    else if (D < 0)
-      return NOL;
+      (*root_sqr).roots = NOL;   //return NOL;
    else
      {
-       (*qwerty).x1 = (-coef_formal.b + sqrt(D)) / (2*coef_formal.a);
-       (*qwerty).x2 = (-coef_formal.b - sqrt(D)) / (2*coef_formal.a);
-       return 2;
+       (*root_sqr).x1 = (-coef_formal_s.b + sqrt(D)) / (2*coef_formal_s.a);
+       (*root_sqr).x2 = (-coef_formal_s.b - sqrt(D)) / (2*coef_formal_s.a);
+       (*root_sqr).roots = 2;                //return 2;
      }
  }
 
 
- void Print_Solutions (ROOTS printr.roots, ROOT *printr.x1, ROOT *printr.x1)
+ void Print_Solutions (ROOTS *printr)
  {
-   switch (printr.roots)
+   switch ((*printr).roots)
     {
        case NOL:
         printf ("\nУравнение не имеет корней\n");
         break;
 
        case 1:
-        Del_Minus (printr.x1);
+        Del_Minus (&(printr->x1));
         printf("\nУравнение имеет 1 корень = %lg\n", (*printr).x1);
         break;
 
        case 2:
-        Del_Minus (printr.x1);
-        Del_Minus (printr.x2);
+        Del_Minus (&(printr->x1));
+        Del_Minus (&(printr->x2));
         printf("\nУравнение имеет 2 корня = %lg и %lg\n",(*printr).x1, (*printr).x2);
         break;
 
@@ -179,18 +175,17 @@ int Solve_Line (COEFFICIENT coef_formal.b, COEFFICIENT coef_formal.c, ROOTS *qwe
   {
     if (Compare_doubles(*x1, epsilon))
     *x1 = 0;
-
   }
 
 
- void Unit_f (STRUCT_FOR_TEST test)
+ void Unit_Testing (STRUCT_FOR_TEST *adress_r_t, COEFFICIENT coef_test, ROOTS roots_test)
  {
    double x1 = 0, x2 = 0;
-   int roots = Solve_common (COEFFICIENT coef, ADRESS_ROOTS adr_roots);
-   if (roots != STRUCT_FOR_TEST.roots_right || Compare_doubles(x1, x1_right)== 0 || Compare_doubles(x2, x2_right)== 0)
+   int roots = Solve_common (coef_test, &roots_test);
+   if (roots_test.roots != (*adress_r_t).roots_right  || Compare_doubles(roots_test.x1, (*adress_r_t).x1_right) == 0 || Compare_doubles(roots_test.x2, (*adress_r_t).x2_right) == 0
    printf ("Ошибка №%d: a = %lg, b = %lg, c = %lg, roots = %d, x1 = %lg, x2 = %lg"
            "Правильные данные: roots_right = %d, x1_right = %lg, x2_right = %lg",
-            n_Test, a, b, c, roots, x1, x2,
+            n_Test, coef_test.a, coef_test.b, coef_test.c, roots_test.roots, roots_test.x1, roots_test.x2,
             roots_right, x1_right, x2_right);
  }
 
