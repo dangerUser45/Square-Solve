@@ -25,8 +25,7 @@ struct STRUCT_FOR_TEST
  };
 
 
-const  int NOL = 0;
-const  int INF = -1;
+enum root_quality {ZERO_ROOTS, ONE_ROOTS, TWO_ROOTS, INF_ROOTS};
 
 const double epsilon = 1e-12;
 
@@ -35,8 +34,10 @@ void Print_Solutions (ROOTS *printr);
 void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line);
 void Solve_Square (COEFFICIENT coef_formal_s, ROOTS *root_sqr);
 void Del_Minus (double *x1);
-void Unit_Testing (STRUCT_FOR_TEST *adress_r_t, COEFFICIENT coef_test, ROOTS roots_test);
+//void Unit_Testing (STRUCT_FOR_TEST *adress_r_t, COEFFICIENT coef_test, ROOTS roots_test);
 int Compare_doubles (double q, double r);
+void Fix_Uncorrect_Entry (COEFFICIENT *adrs_coef);
+void Print_Beggin (void);
 
 
 
@@ -48,11 +49,11 @@ int main (void)
  ROOTS root_and_q;
  COEFFICIENT coef;
 
-       Fix_Uncorrect_Entry ()
+       Fix_Uncorrect_Entry (&coef);
        Solve_common (coef, &root_and_q);
        //Unit_Testing (&run_test, coef, root_and_q );
        Print_Solutions (&root_and_q);
-     
+
 
  printf("Программа завершена");
   return 0;
@@ -142,7 +143,7 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
   }
 
 
- void Unit_Testing (STRUCT_FOR_TEST *adress_str_test)
+ /*void Unit_Testing (STRUCT_FOR_TEST *adress_str_test)
  {
 
     const int n_Test = 20;
@@ -167,7 +168,7 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
                                      {0.00008, -0.46191, 0.46441, 1.00559, 5772,86941, 2},
                                      {17, -12.5, -0.5, -0.0380328, 0.773327, 2},
                                      {-79.46, 1.2, 7941, -9.989311, 10.00441, 2},
-                                    }; 
+                                    };
 
    Solve_common (coef_test, &roots_test);
    if (roots_test.roots != (*adress_r_t).roots_right  || Compare_doubles(roots_test.x1, (*adress_r_t).x1_right) == 0 || Compare_doubles(roots_test.x2, (*adress_r_t).x2_right) == 0)
@@ -175,13 +176,13 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
            "Правильные данные: roots_right = %d, x1_right = %lg, x2_right = %lg",
             (*adress_r_t).n_Test, coef_test.a, coef_test.b, coef_test.c, roots_test.roots, roots_test.x1, roots_test.x2,
             (*adress_r_t).roots_right, (*adress_r_t).x1_right, (*adress_r_t).x2_right);
- }
+ } */
 
 int Compare_doubles (double q, double r)
 {
   if (fabs(q - r) <= epsilon )
-    return 1;
-  return 0;
+    return true;
+  return false;
 }
 
 void Print_Beggin (void)
@@ -196,6 +197,8 @@ void Fix_Uncorrect_Entry (COEFFICIENT *adrs_coef)
   while (1)
    {
      int input_code = -1;
+     double a = 0, b = 0, c = 0;
+     char ch = 0;
      Print_Beggin ();
      scanf("%d", &input_code);
      if (input_code == 0)
@@ -208,18 +211,18 @@ void Fix_Uncorrect_Entry (COEFFICIENT *adrs_coef)
         while (getchar() != '\n');
         continue;
       }
-    
+
       printf("Введите коэффициенты квадратного уравнения: ");
       if (scanf("%lf %lf %lf%c", &a, &b, &c, &ch) != 3)
        {
           while (getchar() != '\n');
           printf("Вы ввели не то, попробуйте ещё раз\n\n");
         }
-      else 
+      else
        {
           adrs_coef->a = a;
           adrs_coef->b = b;
           adrs_coef->c = c;
-       } 
+       }
     }
 }

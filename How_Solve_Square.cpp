@@ -25,10 +25,8 @@ struct STRUCT_FOR_TEST
  };
 
 
-const  int NOL = 0;
-const  int INF = -1;
-
-const double epsilon = 1e-12;
+enum root_quality {ZERO_ROOTS, ONE_ROOTS, TWO_ROOTS, INF_ROOTS};
+const double epsilon = 1e-6;
 
 void Solve_common (COEFFICIENT coef_formal, ROOTS *root_formal_common);
 void Print_Solutions (ROOTS *printr);
@@ -73,14 +71,14 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
       if (Compare_doubles(coef_formal_l.b, 0)) //b == 0
         {
          if (Compare_doubles(coef_formal_l.c, 0))
-           (*root_line).roots = INF;               //return INF;
+           (*root_line).roots = INF_ROOTS;               //return INF;
          else
-           (*root_line).roots = NOL;               //return NOL;
+           (*root_line).roots = ZERO_ROOTS;               //return NOL;
         }
       else
        {
          (*root_line).x1 = (*root_line).x2 = -coef_formal_l.c/coef_formal_l.b;
-         (*root_line).roots = 1;                     //return 0;
+         (*root_line).roots = ONE_ROOTS;                     //return 1;
        }
 }
 
@@ -92,17 +90,17 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
    if (Compare_doubles(D, 0)) //D == 0
     {
       (*root_sqr).x1 = (*root_sqr).x2 = (-coef_formal_s.b) /(2*coef_formal_s.a);
-      (*root_sqr).roots = 1;       //return 1;
+      (*root_sqr).roots = ONE_ROOTS;       //return 1;
     }
 
    else if (D < 0)
-      (*root_sqr).roots = NOL;   //return NOL;
+      (*root_sqr).roots = ZERO_ROOTS;   //return NOL;
    else
      {
        double sqr_D = sqrt(D);
        (*root_sqr).x1 = (-coef_formal_s.b + sqr_D) / (2*coef_formal_s.a);
        (*root_sqr).x2 = (-coef_formal_s.b - sqr_D) / (2*coef_formal_s.a);
-       (*root_sqr).roots = 2;                //return 2;
+       (*root_sqr).roots = TWO_ROOTS;                //return 2;
      }
  }
 
