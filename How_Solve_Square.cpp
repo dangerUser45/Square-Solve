@@ -26,6 +26,7 @@ struct STRUCT_FOR_TEST
 
 
 enum root_quality {ZERO_ROOTS, ONE_ROOTS, TWO_ROOTS, INF_ROOTS};
+enum managment {OUT_OF_PROG, TEST, SOLVE};
 const double epsilon = 1e-6;
 
 void Solve_common (COEFFICIENT coef_formal, ROOTS *root_formal_common);
@@ -33,10 +34,11 @@ void Print_Solutions (ROOTS *printr);
 void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line);
 void Solve_Square (COEFFICIENT coef_formal_s, ROOTS *root_sqr);
 void Del_Minus (double *x1);
-//void Unit_Testing (STRUCT_FOR_TEST *adress_r_t, COEFFICIENT coef_test, ROOTS roots_test);
+void Unit_Testing ();
 int Compare_doubles (double q, double r);
-void Fix_Uncorrect_Entry (COEFFICIENT *adrs_coef);
+int Fix_Uncorrect_Entry ();
 void Print_Beggin (void);
+void Buffer_clean (void);
 
 
 
@@ -48,14 +50,20 @@ int main (void)
  ROOTS root_and_q;
  COEFFICIENT coef;
 
-       Fix_Uncorrect_Entry (&coef);
-       Solve_common (coef, &root_and_q);
-       //Unit_Testing (&run_test, coef, root_and_q );
-       Print_Solutions (&root_and_q);
+       switch (Fix_Uncorrect_Entry ())
+        {
+          case OUT_OF_PROG:
+            return 0;
 
+          case TEST:
+            //Unit_Testing (&run_test, coef, root_and_q );
 
- printf("Программа завершена");
-  return 0;
+          case SOLVE:
+            Solve_common (coef, &root_and_q);
+            Print_Solutions (&root_and_q);
+          default:
+            printf("An error has occurred");
+         }
 }
 
 void Solve_common (COEFFICIENT coef_formal, ROOTS *root_formal_common)
@@ -109,22 +117,22 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
  {
    switch ((*printr).roots)
     {
-       case NOL:
+       case ZERO_ROOTS:
         printf ("\nУравнение не имеет корней\n");
         break;
 
-       case 1:
+       case ONE_ROOTS:
         Del_Minus (&(printr->x1));
         printf("\nУравнение имеет 1 корень = %lg\n", (*printr).x1);
         break;
 
-       case 2:
+       case TWO_ROOTS:
         Del_Minus (&(printr->x1));
         Del_Minus (&(printr->x2));
         printf("\nУравнение имеет 2 корня = %lg и %lg\n",(*printr).x1, (*printr).x2);
         break;
 
-      case INF:
+      case INF_ROOTS:
         printf("\nУравнение имеет бесконечно корней\n");
         break;
 
@@ -142,40 +150,57 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
   }
 
 
- /*void Unit_Testing (STRUCT_FOR_TEST *adress_str_test)
+ void Unit_Testing ()
  {
 
     const int n_Test = 20;
-    STRUCT_FOR_TEST data[n_Test] = {
-                                     {1, 1, 1, NAN, NAN, 0},
-                                     {1, 0, 0, 0, NAN, 1},
-                                     {1, 0, 1, NAN, NAN, 0},
-                                     {1, 1, 0, -1, 0, 2},
-                                     {0, 0, 0, NAN, NAN, INF},
-                                     {0, 1, 0, 0, NAN, 1},
-                                     {0, 0, 1, NAN,NAN, 0},
-                                     {0, 1, 1, -1, NAN, 1},
-                                     {-1, -1, -1, NAN,NAN, 0},
-                                     {-1, 0, 0, 0, NAN, 1},
-                                     {0, -1, 0, 0, NAN, 1},
-                                     {0, 0, -1, NAN,NAN, 0},
-                                     {12, 12, 12, NAN,NAN, 0},
-                                     {1, -2, 1, 1, NAN, 1},
-                                     {1, 78414.6345, 138444.1542, 1.7655, -78416.4 2},
-                                     {2.5, -78, 88, 1.17225, 30.02775, 2},
-                                     {17500, 999999, -17835343, 14.27119, -71.41399, 2},
-                                     {0.00008, -0.46191, 0.46441, 1.00559, 5772,86941, 2},
-                                     {17, -12.5, -0.5, -0.0380328, 0.773327, 2},
-                                     {-79.46, 1.2, 7941, -9.989311, 10.00441, 2},
+    ROOTS data_solve = {};
+    STRUCT_FOR_TEST data[n_Test] = { //coef         data_right
+                                     {{1, 1, 1}, {NAN, NAN, 0}},
+                                     {{1, 0, 0}, {0, NAN, 1}},
+                                     {{1, 0, 1}, {NAN, NAN, 0}},
+                                     {{1, 1, 0}, {-1, 0, 2}},
+                                     {{0, 0, 0}, {NAN, NAN, INF_ROOTS}},
+                                     {{0, 1, 0}, {0, NAN, 1}},
+                                     {{0, 0, 1}, {NAN,NAN, 0}},
+                                     {{0, 1, 1}, {-1, NAN, 1}},
+                                     {{-1, -1, -1}, {NAN,NAN, 0}},
+                                     {{-1, 0, 0}, {0, NAN, 1}},
+                                     {{0, -1, 0}, {0, NAN, 1}},
+                                     {{0, 0, -1}, {NAN,NAN, 0}},
+                                     {{12, 12, 12}, {NAN,NAN, 0}},
+                                     {{1, -2, 1}, {1, NAN, 1}},
+                                     {{1, 78414.6345, 138444.1542}, {1.7655, -78416.4, 2}},
+                                     {{2.5, -78, 88}, {1.17225, 30.02775, 2}},
+                                     {{17500, 999999, -17835343}, {14.27119, -71.41399, 2}},
+                                     {{0.00008, -0.46191, 0.46441}, {1.00559, 5772,86941, 2}},
+                                     {{17, -12.5, -0.5}, {-0.0380328, 0.773327, 2}},
+                                     {{-79.46, 1.2, 7941}, {-9.989311, 10.00441, 2}},
                                     };
 
-   Solve_common (coef_test, &roots_test);
-   if (roots_test.roots != (*adress_r_t).roots_right  || Compare_doubles(roots_test.x1, (*adress_r_t).x1_right) == 0 || Compare_doubles(roots_test.x2, (*adress_r_t).x2_right) == 0)
-   printf ("Ошибка №%d: a = %lg, b = %lg, c = %lg, roots = %d, x1 = %lg, x2 = %lg"
-           "Правильные данные: roots_right = %d, x1_right = %lg, x2_right = %lg",
-            (*adress_r_t).n_Test, coef_test.a, coef_test.b, coef_test.c, roots_test.roots, roots_test.x1, roots_test.x2,
-            (*adress_r_t).roots_right, (*adress_r_t).x1_right, (*adress_r_t).x2_right);
- } */
+    for (int i = 0; i < n_Test; i++)
+     {
+      Solve_common (data[i].coef, &data_solve);
+      if (data_solve.roots != data[i].data_right.roots
+       || (Compare_doubles(data_solve.x1, data[i].data_right.roots.x1) == 0)
+       || (Compare_doubles(data_solve.x2, data[i].data_right.roots.x2) == 0))
+       {
+         printf ("Error in test №%d:\n"
+                 "a = %lg, b = %lg, c = %lg\n"
+                 "Correct data     Solve data"
+                 " roots = %d       roots = %d"
+                 " x1 = %.6lf       x1 = %.6lf"
+                 " x2 = %.6lf       x2 = %.6lf",
+                 n_Test+1,
+                 data[i].coef.a, data[i].coef.b, data[i].coef.c,
+                 data[i].data_right.roots,data_solve.roots,
+                 data[i].data_right.x1, data_solve.x1,
+                 data[i].data_right.x2, data_solve.x1);
+       }
+
+     }
+
+ }
 
 int Compare_doubles (double q, double r)
 {
@@ -186,42 +211,52 @@ int Compare_doubles (double q, double r)
 
 void Print_Beggin (void)
 {
-  printf("  Введите \"0\"            Введите \"1\"\n");
-  printf("  для завершения   или   для решения\n");
-  printf("  программы              квадратного уравнения\n");
+  printf("Hello! You are welcomed by the program for solving the quadratic equation\n"
+         "What do you want to do?\n"
+         "Enter:\n");
+  printf("\"s\" - for solve equation\n"
+         "\"t\" - for testing programm\n"
+         "\"e\" - for exit\n");
+
 }
 
-void Fix_Uncorrect_Entry (COEFFICIENT *adrs_coef)
-{
-  while (1)
-   {
-     int input_code = -1;
-     double a = 0, b = 0, c = 0;
-     char ch = 0;
+int Fix_Uncorrect_Entry ()
+ {
+
+     int input_code = 0;
+     int ch = 0;
      Print_Beggin ();
-     scanf("%d", &input_code);
-     if (input_code == 0)
-      {
-        break;
-      }
+     input_code = getchar();
 
-     else if (input_code != 1)
-      {
-        while (getchar() != '\n');
-        continue;
-      }
 
-      printf("Введите коэффициенты квадратного уравнения: ");
-      if (scanf("%lf %lf %lf%c", &a, &b, &c, &ch) != 3)
-       {
-          while (getchar() != '\n');
-          printf("Вы ввели не то, попробуйте ещё раз\n\n");
+     while (true)
+      {
+       if ((input_code == 'q' || input_code == 'Q') && ((ch = getchar()) == '\n' || ch == EOF))
+        {
+          printf("Программа завершена");
+          return OUT_OF_PROG;
         }
-      else
-       {
-          adrs_coef->a = a;
-          adrs_coef->b = b;
-          adrs_coef->c = c;
-       }
-    }
-}
+       else if ((input_code == 't' || input_code == 'T') && ((ch = getchar()) == '\n' || ch == EOF))
+        {
+          return TEST;
+        }
+       else if ((input_code == 's' || input_code == 'S') && ((ch = getchar()) == '\n' || ch == EOF))
+        {
+          return SOLVE;
+        }
+
+       else
+        {
+          Buffer_clean();
+          printf ("You can only enter \"s\" or \"t\" or \"q\"\n");
+          input_code = getchar();
+        }
+      }
+
+
+ }
+
+void Buffer_clean (void)
+ {
+   while (getchar() != '\n');
+ }
