@@ -40,8 +40,9 @@ int Compare_doubles (double q, double r);
 int Fix_Uncorrect_Entry (void);
 void Print_Beggin (void);
 void Buffer_clean (void);
-int Processing_coefficients (COEFFICIENT *var_for_adr_coef, ROOTS *var_for_adr_roots);
+int Processing_coefficients (COEFFICIENT *var_for_adr_coef);
 int Choice_Solve (void);
+int For_Return (void);
 
 
 
@@ -65,14 +66,33 @@ int main (void)
 
           case SOLVE:
             while (true)
-              {     int ret_val = Processing_coefficients (&coef, &root_and_q);
+              {     Processing_coefficients (&coef);
+                    Solve_common (coef, &root_and_q);
+                    Print_Solutions (&root_and_q);
+                    int ret_val = For_Return ();
+
                     if(ret_val == RET_IN_STE)
                       {
-                        Fix_Uncorrect_Entry ();
-                        return 0;
+                        switch(Fix_Uncorrect_Entry ())
+                        {
+
+                          case OUT_OF_PROG:
+                           return 0;
+
+                          case SOLVE:
+                           continue;
+
+                          case TEST:
+                           //Unit_Testing (&run_test, coef, root_and_q );
+                           break;
+
+                         default:
+                           printf("Error !!!");
+
+                        }
                       }
                     else if (ret_val == RET_CONTINUE_SOLVE)
-                        Processing_coefficients (&coef, &root_and_q);
+                     continue;
                     else
                     {
                         printf("Error return value in Processing_coefficients ()");
@@ -84,6 +104,7 @@ int main (void)
           default:
             printf("An error has occurred");
          }
+   return 0;
 }
 
 void Solve_common (COEFFICIENT coef_formal, ROOTS *root_formal_common)
@@ -262,12 +283,11 @@ void Buffer_clean (void)
    while (getchar() != '\n');
  }
 
-int Processing_coefficients (COEFFICIENT *var_for_adr_coef, ROOTS *var_for_adr_roots)
+int Processing_coefficients (COEFFICIENT *var_for_adr_coef)
  {
-   double a = 0, b = 0, c = 0;
+   double a = 0.0, b = 0.0, c = 0.0;
    int ch = 0;
    int ret_val = 0;
-   COEFFICIENT coef_copy = {};
 
    while(true)
            {
@@ -278,52 +298,42 @@ int Processing_coefficients (COEFFICIENT *var_for_adr_coef, ROOTS *var_for_adr_r
                     var_for_adr_coef->a = a;
                     var_for_adr_coef->b = b;
                     var_for_adr_coef->c = c;
-                    coef_copy.a = a;
-                    coef_copy.b = b;
-                    coef_copy.c = c;
-
-
-
-                    Solve_common (coef_copy, var_for_adr_roots);
-                    Print_Solutions (var_for_adr_roots);
-
-                    int output_choice = Choice_Solve();
-                    if (output_choice == OUT_OF_PROG)
-                       {
-                          return RET_IN_STE;
-                       }
-                    else if (output_choice == SOLVE)
-                       {
-                          return RET_CONTINUE_SOLVE;
-                       }
-                    else printf("Erorr in return value in Choice_Solve");
+                    break;
                   }
-
              else
                   {
                     Buffer_clean();
                     printf("The data is entered incorrectly!\n");
                   }
            }
-   int input_code = 0;
-   if ((input_code == 'e' || input_code == 'E') && ((ch = getchar()) == '\n' || ch == EOF))
-        {
-          printf("Программа завершена");
-          return OUT_OF_PROG;
-        }
-
-
  }
+
+ int For_Return (void)
+ {
+
+  int output_choice = Choice_Solve();
+  if (output_choice == OUT_OF_PROG)
+    {
+        return RET_IN_STE;
+    }
+  else if (output_choice == SOLVE)
+    {
+        return RET_CONTINUE_SOLVE;
+    }
+  else printf("Erorr in return value in Choice_Solve");
+ }
+
+
+
+
 
  int Choice_Solve (void)
  {
    printf("Would you like to go to the main menu?\n"
           "Enter \"e\" to exit and \"s\" to continue solving\n");
-
     int input_code = 0;
      int ch = 0;
      input_code = getchar();
-
 
      while (true)
       {
@@ -336,7 +346,6 @@ int Processing_coefficients (COEFFICIENT *var_for_adr_coef, ROOTS *var_for_adr_r
         {
           return SOLVE;
         }
-
        else
         {
           Buffer_clean();
