@@ -26,7 +26,7 @@ struct STRUCT_FOR_TEST
 
 
 enum root_quality {ZERO_ROOTS, ONE_ROOTS, TWO_ROOTS, INF_ROOTS};
-enum managment {OUT_OF_PROG, TEST, SOLVE};
+enum managment {DEFAULT = -1, OUT_OF_PROG, TEST, SOLVE};
 enum menu {RET_IN_STE, RET_CONTINUE_SOLVE};
 const double epsilon = 1e-6;
 
@@ -40,7 +40,7 @@ int Compare_doubles (double q, double r);
 int Fix_Uncorrect_Entry (void);
 void Print_Beggin (void);
 void Buffer_clean (void);
-int Processing_coefficients (COEFFICIENT *var_for_adr_coef);
+void Processing_coefficients (COEFFICIENT *var_for_adr_coef);
 int Choice_Solve (void);
 int For_Return (void);
 
@@ -61,8 +61,9 @@ int main (void)
             return 0;
 
           case TEST:
-            //Unit_Testing (&run_test, coef, root_and_q );
-            break;
+            Unit_Testing ();
+            printf("Programm exit");
+             return 0;
 
           case SOLVE:
             while (true)
@@ -83,8 +84,8 @@ int main (void)
                            continue;
 
                           case TEST:
-                           //Unit_Testing (&run_test, coef, root_and_q );
-                           break;
+                           Unit_Testing ();
+                           return 0;
 
                          default:
                            printf("Error !!!");
@@ -92,7 +93,7 @@ int main (void)
                         }
                       }
                     else if (ret_val == RET_CONTINUE_SOLVE)
-                     continue;
+                      continue;
                     else
                     {
                         printf("Error return value in Processing_coefficients ()");
@@ -159,26 +160,26 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
    switch ((*printr).roots)
     {
        case ZERO_ROOTS:
-        printf ("\nУравнение не имеет корней\n");
+        printf ("The equation has no roots\n");
         break;
 
        case ONE_ROOTS:
         Del_Minus (&(printr->x1));
-        printf("\nУравнение имеет 1 корень = %lg\n", (*printr).x1);
+        printf("The equation has 1 root = %lg\n", (*printr).x1);
         break;
 
        case TWO_ROOTS:
         Del_Minus (&(printr->x1));
         Del_Minus (&(printr->x2));
-        printf("\nУравнение имеет 2 корня = %lg и %lg\n",(*printr).x1, (*printr).x2);
+        printf("The equation has 2 root = %lg and %lg\n",(*printr).x1, (*printr).x2);
         break;
 
       case INF_ROOTS:
-        printf("\nУравнение имеет бесконечно корней\n");
+        printf("The equation has infinite roots.\n");
         break;
 
       default:
-        printf("\nОшибка\n");
+        printf("Error\n");
         break;
    }
  }
@@ -191,7 +192,7 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
   }
 
 
- /*void Unit_Testing (void)
+ void Unit_Testing (void)
  {
 
     const int n_Test = 20;
@@ -207,7 +208,7 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
        || (Compare_doubles(data_solve.x1, data[i].data_right.x1) == 0)
        || (Compare_doubles(data_solve.x2, data[i].data_right.x2) == 0))
        {
-         printf ("Error in test №%d:\n"
+         printf ("Error in test %d:\n"
                  "a = %lg, b = %lg, c = %lg\n"
                  "Correct data     Solve data"
                  " roots = %d       roots = %d"
@@ -222,7 +223,7 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
 
      }
 
- } */
+ }
 
 int Compare_doubles (double q, double r)
 {
@@ -255,7 +256,7 @@ int Fix_Uncorrect_Entry (void)
       {
        if ((input_code == 'e' || input_code == 'E') && ((ch = getchar()) == '\n' || ch == EOF))
         {
-          printf("Программа завершена");
+          printf("Programm exit");
           return OUT_OF_PROG;
         }
        else if ((input_code == 't' || input_code == 'T') && ((ch = getchar()) == '\n' || ch == EOF))
@@ -283,17 +284,17 @@ void Buffer_clean (void)
    while (getchar() != '\n');
  }
 
-int Processing_coefficients (COEFFICIENT *var_for_adr_coef)
+void Processing_coefficients (COEFFICIENT *var_for_adr_coef)
  {
    double a = 0.0, b = 0.0, c = 0.0;
-   int ch = 0;
+   char ch = 0;
    int ret_val = 0;
 
    while(true)
            {
              printf("Enter the coefficients of the equation\n");
              ret_val = scanf("%lf %lf %lf%c", &a, &b, &c, &ch);
-             if (ret_val == 4 && (ch =='\n' || ch == ' ' || ch == EOF))
+             if (ret_val == 4 && (ch =='\n' || ch == ' '))
                   {
                     var_for_adr_coef->a = a;
                     var_for_adr_coef->b = b;
@@ -321,6 +322,7 @@ int Processing_coefficients (COEFFICIENT *var_for_adr_coef)
         return RET_CONTINUE_SOLVE;
     }
   else printf("Erorr in return value in Choice_Solve");
+        return DEFAULT;
  }
 
 
