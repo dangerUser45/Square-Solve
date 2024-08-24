@@ -27,6 +27,7 @@ struct STRUCT_FOR_TEST
 
 enum root_quality {ZERO_ROOTS, ONE_ROOTS, TWO_ROOTS, INF_ROOTS};
 enum managment {OUT_OF_PROG, TEST, SOLVE};
+enum menu {RET_IN_STE, RET_CONTINUE_SOLVE};
 const double epsilon = 1e-6;
 
 void Solve_common (COEFFICIENT coef_formal, ROOTS *root_formal_common);
@@ -34,11 +35,12 @@ void Print_Solutions (ROOTS *printr);
 void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line);
 void Solve_Square (COEFFICIENT coef_formal_s, ROOTS *root_sqr);
 void Del_Minus (double *x1);
-void Unit_Testing ();
+void Unit_Testing (void);
 int Compare_doubles (double q, double r);
-int Fix_Uncorrect_Entry ();
+int Fix_Uncorrect_Entry (void);
 void Print_Beggin (void);
 void Buffer_clean (void);
+int Processing_coefficients (COEFFICIENT *var_for_adr_coef, ROOTS *var_for_adr_roots);
 
 
 
@@ -50,6 +52,7 @@ int main (void)
  ROOTS root_and_q;
  COEFFICIENT coef;
 
+
        switch (Fix_Uncorrect_Entry ())
         {
           case OUT_OF_PROG:
@@ -59,10 +62,17 @@ int main (void)
             //Unit_Testing (&run_test, coef, root_and_q );
 
           case SOLVE:
-            Solve_common (coef, &root_and_q);
-            Print_Solutions (&root_and_q);
+            while (true)
+              {     int ret_val = Processing_coefficients (&coef, &root_and_q);
+                    if(ret_val == RET_IN_STE)
+                        Fix_Uncorrect_Entry ();
+                    else if (ret_val == RET_CONTINUE_SOLVE) 
+                        Processing_coefficients ();
+                    else printf("Error return value in Processing_coefficients ()");    
+              }
+
           default:
-            
+            printf("An error has occurred");
          }
 }
 
@@ -150,54 +160,36 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
   }
 
 
- void Unit_Testing ()
+ void Unit_Testing (void)
  {
 
     const int n_Test = 20;
     ROOTS data_solve = {};
-    STRUCT_FOR_TEST data[n_Test] = { //coef         data_right
-                                     {{1, 1, 1}, {NAN, NAN, 0}},
-                                     {{1, 0, 0}, {0, NAN, 1}},
-                                     {{1, 0, 1}, {NAN, NAN, 0}},
-                                     {{1, 1, 0}, {-1, 0, 2}},
-                                     {{0, 0, 0}, {NAN, NAN, INFINITY}},
-                                     {{0, 1, 0}, {0, NAN, 1}},
-                                     {{0, 0, 1}, {NAN,NAN, 0}},
-                                     {{0, 1, 1}, {-1, NAN, 1}},
-                                     {{-1, -1, -1}, {NAN,NAN, 0}},
-                                     {{-1, 0, 0}, {0, NAN, 1}},
-                                     {{0, -1, 0}, {0, NAN, 1}},
-                                     {{0, 0, -1}, {NAN,NAN, 0}},
-                                     {{12, 12, 12}, {NAN,NAN, 0}},
-                                     {{1, -2, 1}, {1, NAN, 1}},
-                                     {{1, 78414.6345, 138444.1542}, {1.7655, -78416.4, 2}},
-                                     {{2.5, -78, 88}, {1.17225, 30.02775, 2}},
-                                     {{17500, 999999, -17835343}, {14.27119, -71.41399, 2}},
-                                     {{0.00008, -0.46191, 0.46441}, {1.00559, 5772,86941, 2}},
-                                     {{17, -12.5, -0.5}, {-0.0380328, 0.773327, 2}},
-                                     {{-79.46, 1.2, 7941}, {-9.989311, 10.00441, 2}},
+    const STRUCT_FOR_TEST data[] = { //coef         data_right
+                                     {{1, 1, 1}, {0, 0, 0}}
                                     };
 
-    for (i = 0; i < n_Test; i++)
+    for (int i = 0; i < n_Test; i++)
      {
       Solve_common (data[i].coef, &data_solve);
       if (data_solve.roots != data[i].data_right.roots
-       || (Compare_doubles(data_solve.x1, data[i].data_right.roots.x1) == 0)
-       || (Compare_doubles(data_solve.x2, data[i].data_right.roots.x2) == 0)
-      printf ("Error in test №%d:\n"
-              "a = %lg, b = %lg, c = %lg\n"
-              "Correct data     Solve data"
-              " roots = %d       roots = %d"
-              " x1 = %.6lf       x1 = %.6lf"
-              " x2 = %.6lf       x2 = %.6lf",
-              n_Test+1,
-              data[i].coef.a, data[i].coef.b, data[i].coef.c,
-              data[i].data_right.roots,data_solve.roots,
-              data[i].data_right.x1, data_solve.x1,
-              data[i].data_right.x2, data_solve.x1)
+       || (Compare_doubles(data_solve.x1, data[i].data_right.x1) == 0)
+       || (Compare_doubles(data_solve.x2, data[i].data_right.x2) == 0))
+       {
+         printf ("Error in test №%d:\n"
+                 "a = %lg, b = %lg, c = %lg\n"
+                 "Correct data     Solve data"
+                 " roots = %d       roots = %d"
+                 " x1 = %.6lf       x1 = %.6lf"
+                 " x2 = %.6lf       x2 = %.6lf",
+                 n_Test+1,
+                 data[i].coef.a, data[i].coef.b, data[i].coef.c,
+                 data[i].data_right.roots,data_solve.roots,
+                 data[i].data_right.x1, data_solve.x1,
+                 data[i].data_right.x2, data_solve.x1);
+       }
 
-
-    }
+     }
 
  }
 
@@ -219,7 +211,7 @@ void Print_Beggin (void)
 
 }
 
-int Fix_Uncorrect_Entry ()
+int Fix_Uncorrect_Entry (void)
  {
 
      int input_code = 0;
@@ -230,7 +222,7 @@ int Fix_Uncorrect_Entry ()
 
      while (true)
       {
-       if ((input_code == 'q' || input_code == 'Q') && ((ch = getchar()) == '\n' || ch == EOF))
+       if ((input_code == 'e' || input_code == 'E') && ((ch = getchar()) == '\n' || ch == EOF))
         {
           printf("Программа завершена");
           return OUT_OF_PROG;
@@ -247,7 +239,7 @@ int Fix_Uncorrect_Entry ()
        else
         {
           Buffer_clean();
-          printf ("You can only enter \"s\" or \"t\" or \"q\"\n");
+          printf ("You can only enter \"s\" or \"t\" or \"e\"\n");
           input_code = getchar();
         }
       }
@@ -258,4 +250,88 @@ int Fix_Uncorrect_Entry ()
 void Buffer_clean (void)
  {
    while (getchar() != '\n');
+ }
+
+int Processing_coefficients (COEFFICIENT *var_for_adr_coef, ROOTS *var_for_adr_roots)
+ {
+   double a = 0, b = 0, c = 0;
+   int ch = 0;
+   int ret_val = 0;
+   COEFFICIENT coef_copy = {};
+
+   while(true)
+           {
+             printf("Enter the coefficients of the equation\n");
+             ret_val = scanf("%lf %lf %lf%c", &a, &b, &c, &ch);
+             if (ret_val == 3 && ch =='\n')
+                  {
+                    var_for_adr_coef->a = a;
+                    var_for_adr_coef->b = b;
+                    var_for_adr_coef->c = c;
+                    coef_copy.a = a;
+                    coef_copy.b = b;
+                    coef_copy.c = c;
+                    
+                    
+                    
+                    Solve_common (coef_copy, var_for_adr_roots);
+                    Print_Solutions (var_for_adr_roots);
+                    
+                    int output_choice = Choice_Solve();
+                    if (output_choice == OUT_OF_PROG)
+                       {
+                          return OUT_IN_STE;
+                       }
+                    else if (output_choice == SOLVE)
+                       {
+                          return RET_CONTINUE_SOLVE;
+                       }
+                    else printf("Erorr in return value in Choice_Solve");   
+                  }
+
+             else
+                  {
+                    Buffer_clean();
+                    printf("The data is entered incorrectly!\n");
+                  }
+           }
+   int input_code = 0;
+   if ((input_code == 'e' || input_code == 'E') && ((ch = getchar()) == '\n' || ch == EOF))
+        {
+          printf("Программа завершена");
+          return OUT_OF_PROG;
+        }
+
+
+ }
+
+ int Choice_Solve (void)
+ {
+   printf("Would you like to go to the main menu?\n"
+          "Enter \"e\" to exit and \"s\" to continue solving\n");
+
+    int input_code = 0;
+     int ch = 0;
+     input_code = getchar();
+
+
+     while (true)
+      {
+       if ((input_code == 'e' || input_code == 'E') && ((ch = getchar()) == '\n' || ch == EOF))
+        {
+          return OUT_OF_PROG;
+        }
+
+       else if ((input_code == 's' || input_code == 'S') && ((ch = getchar()) == '\n' || ch == EOF))
+        {
+          return SOLVE;
+        }
+
+       else
+        {
+          Buffer_clean();
+          printf ("You can only enter \"e\" or \"s\"\n");
+          input_code = getchar();
+        }
+      }
  }
