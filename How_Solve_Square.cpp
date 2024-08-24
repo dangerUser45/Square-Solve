@@ -41,6 +41,7 @@ int Fix_Uncorrect_Entry (void);
 void Print_Beggin (void);
 void Buffer_clean (void);
 int Processing_coefficients (COEFFICIENT *var_for_adr_coef, ROOTS *var_for_adr_roots);
+int Choice_Solve (void);
 
 
 
@@ -60,20 +61,30 @@ int main (void)
 
           case TEST:
             //Unit_Testing (&run_test, coef, root_and_q );
+            break;
 
           case SOLVE:
             while (true)
               {     int ret_val = Processing_coefficients (&coef, &root_and_q);
                     if(ret_val == RET_IN_STE)
+                      {
                         Fix_Uncorrect_Entry ();
+                        return 0;
+                      }
                     else if (ret_val == RET_CONTINUE_SOLVE)
-                        Processing_coefficients ();
-                    else printf("Error return value in Processing_coefficients ()");
+                        Processing_coefficients (&coef, &root_and_q);
+                    else
+                    {
+                        printf("Error return value in Processing_coefficients ()");
+                        break;
+                    }
               }
+            break;
 
           default:
             printf("An error has occurred");
          }
+   return 0;
 }
 
 void Solve_common (COEFFICIENT coef_formal, ROOTS *root_formal_common)
@@ -160,7 +171,7 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
   }
 
 
- void Unit_Testing (void)
+ /*void Unit_Testing (void)
  {
 
     const int n_Test = 20;
@@ -191,7 +202,7 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
 
      }
 
- }
+ } */
 
 int Compare_doubles (double q, double r)
 {
@@ -263,7 +274,7 @@ int Processing_coefficients (COEFFICIENT *var_for_adr_coef, ROOTS *var_for_adr_r
            {
              printf("Enter the coefficients of the equation\n");
              ret_val = scanf("%lf %lf %lf%c", &a, &b, &c, &ch);
-             if (ret_val == 3 && ch =='\n')
+             if (ret_val == 4 && (ch =='\n' || ch == ' ' || ch == EOF))
                   {
                     var_for_adr_coef->a = a;
                     var_for_adr_coef->b = b;
@@ -280,7 +291,7 @@ int Processing_coefficients (COEFFICIENT *var_for_adr_coef, ROOTS *var_for_adr_r
                     int output_choice = Choice_Solve();
                     if (output_choice == OUT_OF_PROG)
                        {
-                          return OUT_IN_STE;
+                          return RET_IN_STE;
                        }
                     else if (output_choice == SOLVE)
                        {
