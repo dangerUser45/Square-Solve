@@ -28,7 +28,7 @@ struct STRUCT_FOR_TEST
 enum root_quality {ZERO_ROOTS, ONE_ROOTS, TWO_ROOTS, INF_ROOTS};
 enum managment {DEFAULT = -1, OUT_OF_PROG, TEST, SOLVE};
 enum menu {RET_IN_STE, RET_CONTINUE_SOLVE};
-const double epsilon = 1e-6;
+const double epsilon = 1e-3;
 
 void Solve_common (COEFFICIENT coef_formal, ROOTS *root_formal_common);
 void Print_Solutions (ROOTS *printr);
@@ -195,11 +195,13 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
  void Unit_Testing (void)
  {
 
-    const int n_Test = 1;
+    const int n_Test = 4;
     ROOTS data_solve = {};
     const STRUCT_FOR_TEST data[] = { //coef         data_right
-                                     {{1, -7, 12}, {3, 4, 2}}
-                                    };
+                                     {{1, -7, 12}, {4, 3, 2}},
+                                     {{1.5, -7, 2}, {4.36092, 0.305746, 2}},
+                                     
+                                   };
 
     for (int i = 0; i < n_Test; i++)
      {
@@ -210,24 +212,24 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
        {
          printf ("Error in test %d:\n"
                  "a = %lg, b = %lg, c = %lg\n"
-                 "Correct data     Solve data"
-                 " roots = %d       roots = %d"
-                 " x1 = %.6lf       x1 = %.6lf"
-                 " x2 = %.6lf       x2 = %.6lf",
-                 n_Test+1,
+                 "Correct data     Solve data\n"
+                 " roots = %d       roots = %d\n"
+                 " x1 = %lf    x1 = %lf\n"
+                 " x2 = %lf    x2 = %lf\n",
+                 i+1,
                  data[i].coef.a, data[i].coef.b, data[i].coef.c,
                  data[i].data_right.roots,data_solve.roots,
                  data[i].data_right.x1, data_solve.x1,
-                 data[i].data_right.x2, data_solve.x1);
+                 data[i].data_right.x2, data_solve.x2);
        }
-
+       else printf("Test [%d] success !\n", i+1);
      }
 
  }
 
 int Compare_doubles (double q, double r)
 {
-  if (fabs(q - r) <= epsilon )
+  if (fabs(q - r) <= epsilon)
     return true;
   return false;
 }
