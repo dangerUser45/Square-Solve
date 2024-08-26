@@ -195,10 +195,10 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
  void Unit_Testing (void)
  {
 
-    const int n_Test = 20;
+    const int n_Test = 1;
     ROOTS data_solve = {};
     const STRUCT_FOR_TEST data[] = { //coef         data_right
-                                     {{1, 1, 1}, {0, 0, 0}}
+                                     {{1, -7, 12}, {4, 3, 2}}
                                     };
 
     for (int i = 0; i < n_Test; i++)
@@ -208,19 +208,19 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
        || (Compare_doubles(data_solve.x1, data[i].data_right.x1) == 0)
        || (Compare_doubles(data_solve.x2, data[i].data_right.x2) == 0))
        {
-         printf ("Error in test ¹%d:\n"
+         printf ("Error in test %d:\n"
                  "a = %lg, b = %lg, c = %lg\n"
-                 "Correct data     Solve data"
-                 " roots = %d       roots = %d"
-                 " x1 = %.6lf       x1 = %.6lf"
-                 " x2 = %.6lf       x2 = %.6lf",
+                 "Correct data     Solve data\n"
+                 " roots = %d       roots = %d\n"
+                 " x1 = %.6lf    x1 = %.6lf\n"
+                 " x2 = %.6lf    x2 = %.6lf\n",
                  n_Test+1,
                  data[i].coef.a, data[i].coef.b, data[i].coef.c,
                  data[i].data_right.roots,data_solve.roots,
                  data[i].data_right.x1, data_solve.x1,
-                 data[i].data_right.x2, data_solve.x1);
+                 data[i].data_right.x2, data_solve.x2);
        }
-
+       else printf("Test success !\n");
      }
 
  }
@@ -229,7 +229,7 @@ int Compare_doubles (double q, double r)
 {
   if (fabs(q - r) <= epsilon )
     return true;
-  return false;
+    return false;
 }
 
 void Print_Beggin (void)
@@ -256,7 +256,7 @@ int Fix_Uncorrect_Entry (void)
       {
        if ((input_code == 'e' || input_code == 'E') && ((ch = getchar()) == '\n' || ch == EOF))
         {
-          printf("Ïðîãðàììà çàâåðøåíà");
+          printf("Programm exit");
           return OUT_OF_PROG;
         }
        else if ((input_code == 't' || input_code == 'T') && ((ch = getchar()) == '\n' || ch == EOF))

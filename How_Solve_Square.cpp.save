@@ -195,10 +195,10 @@ void Solve_Line (COEFFICIENT coef_formal_l, ROOTS *root_line)
  void Unit_Testing (void)
  {
 
-    const int n_Test = 20;
+    const int n_Test = 1;
     ROOTS data_solve = {};
     const STRUCT_FOR_TEST data[] = { //coef         data_right
-                                     {{1, 1, 1}, {0, 0, 0}}
+                                     {{1, -7, 12}, {3, 4, 2}}
                                     };
 
     for (int i = 0; i < n_Test; i++)
