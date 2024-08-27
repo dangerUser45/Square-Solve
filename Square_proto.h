@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdbool.h>
-# include <assert.h>
+#include <assert.h>
 
 struct COEFFICIENT
 {
@@ -28,19 +28,19 @@ struct STRUCT_FOR_TEST
 enum root_quantity {ZERO_ROOTS, ONE_ROOTS, TWO_ROOTS, INF_ROOTS, N_OR_INF};
 enum management {DEFAULT = -1, OUT_OF_PROG, TEST, SOLVE};
 enum menu {RET_IN_STE, RET_CONTINUE_SOLVE};
-const double epsilon = 1e-3;
-const double alpha = 1e5;
+const double epsilon = 1e-12;
+const double test_precision = 1e5;
 
 void Solve_common (const COEFFICIENT coef_formal, ROOTS * const root_formal_common);
 void Print_Solutions (ROOTS * const printr);
-void Solve_Line (COEFFICIENT coef_formal_l, ROOTS * const root_line);
-void Solve_Square (COEFFICIENT coef_formal_s, ROOTS * const root_sqr);
-void Del_Minus (double *x1);
+void Solve_Line (const COEFFICIENT coef_formal_l, ROOTS * const root_line);
+void Solve_Square (const COEFFICIENT coef_formal_s, ROOTS * const root_sqr);
+void Del_Minus (double * const x1);
 void Unit_Testing (void);
 int Compare_doubles (const double q, const double r);
 double Rounding_doubles (const double t);
 bool Comparison_nan_inf (const double a, const double b, const double c);
-int Fix_Uncorrect_Entry (bool is_from_main);
+int Fix_Uncorrect_Entry (const bool is_from_main);
 void Print_Meeting (void);
 void Print_Begin (void);
 void Print_In_Solve (void);

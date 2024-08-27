@@ -34,7 +34,7 @@ void Solve_Line (const COEFFICIENT coef_formal_l, ROOTS * const root_line)
  {
    assert(root_sqr != NULL);
    const double D = (coef_formal_s.b * coef_formal_s.b) - (4 * coef_formal_s.a * coef_formal_s.c);
-     assert(isfinite(D));
+   assert(isfinite(D));
 
    if (Compare_doubles(D, 0)) //D == 0
     {
@@ -45,7 +45,7 @@ void Solve_Line (const COEFFICIENT coef_formal_l, ROOTS * const root_line)
       (*root_sqr).roots = ZERO_ROOTS;   //return NOL;
    else
      {
-       double sqr_D = sqrt(D);
+       const double sqr_D = sqrt(D);
        (*root_sqr).x1 = (-coef_formal_s.b + sqr_D) / (2*coef_formal_s.a);
        (*root_sqr).x2 = (-coef_formal_s.b - sqr_D) / (2*coef_formal_s.a);
        (*root_sqr).roots = TWO_ROOTS;                //return 2;
@@ -54,7 +54,7 @@ void Solve_Line (const COEFFICIENT coef_formal_l, ROOTS * const root_line)
 
 int Compare_doubles (const double q, const double r)
   {
-    assert (isfinite(q));
+    assert (isfinite (q));
     assert (isfinite (r));
     if (fabs(q - r) < epsilon)
       return true;
@@ -64,7 +64,7 @@ int Compare_doubles (const double q, const double r)
 double Rounding_doubles (const double t)
   {
     assert (isfinite(t));
-    return (round(t * alpha) / alpha);
+    return (round(t * test_precision) / test_precision);
   }
 
 bool Comparison_nan_inf (const double a, const double b, const double c)

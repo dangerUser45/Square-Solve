@@ -1,6 +1,7 @@
 #include "Square_proto.h"
 void Processing_coefficients (COEFFICIENT * const var_for_adr_coef)
   {
+     assert (var_for_adr_coef != NULL);
      double a = NAN, b = NAN, c = NAN;
      char ch = 0;
      int ret_val = 0;
@@ -39,7 +40,7 @@ int For_Return (void)
     return DEFAULT;
   }
 
-int Fix_Uncorrect_Entry (bool is_from_main)
+int Fix_Uncorrect_Entry (const bool is_from_main)
   {
 
     int input_code = 0;

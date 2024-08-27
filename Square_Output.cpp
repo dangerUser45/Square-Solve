@@ -21,7 +21,7 @@ void Buffer_clean (void)
     while ((ch = getchar()) != '\n' && ch != EOF);
   }
 
-void Print_Solutions (ROOTS *printr)
+void Print_Solutions (ROOTS * const printr)
   {
     assert(printr != NULL);
     switch ((*printr).roots)
@@ -59,7 +59,7 @@ void Del_Minus (double * const x1)
   {
     assert(x1 != NULL);
     if (Compare_doubles(*x1, 0))
-    *x1 = 0;
+      *x1 = 0;
   }
 
 void Print_In_Solve (void)
