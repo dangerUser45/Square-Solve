@@ -1,0 +1,32 @@
+#include <locale.h>
+#include <stdio.h>
+#include <math.h>
+#include <stdbool.h>
+#include "Square_proto"
+
+struct COEFFICIENT
+{
+    double a = 0,
+           b = 0,
+           c = 0;
+};
+
+struct ROOTS
+{
+   double x1 = 0,
+          x2 = 0;
+   int roots = 0;
+
+};
+
+struct STRUCT_FOR_TEST
+ {
+    COEFFICIENT coef = {};
+    ROOTS data_right = {};
+ };
+
+
+enum root_quality {ZERO_ROOTS, ONE_ROOTS, TWO_ROOTS, INF_ROOTS};
+enum managment {DEFAULT = -1, OUT_OF_PROG, TEST, SOLVE};
+enum menu {RET_IN_STE, RET_CONTINUE_SOLVE};
+const double epsilon = 1e-3;

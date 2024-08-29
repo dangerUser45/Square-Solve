@@ -1,14 +1,14 @@
 #include "Square_proto.h"
 void Solve_common (const COEFFICIENT coef_formal, ROOTS * const root_formal_common)
-  {
-    assert(root_formal_common != NULL);
-    if (Comparison_nan_inf (coef_formal.a, coef_formal.b, coef_formal.c))
-      (*root_formal_common).roots = N_OR_INF;
-    else if (Compare_doubles(coef_formal.a, 0))                                //a == 0
-      Solve_Line(coef_formal, root_formal_common);
-    else                                                                       //a != 0
-      Solve_Square(coef_formal, root_formal_common);
-  }
+{
+  assert(root_formal_common != NULL);
+  if (Comparison_nan_inf (coef_formal.a, coef_formal.b, coef_formal.c))
+    (*root_formal_common).roots = N_OR_INF;
+  else if (Compare_doubles(coef_formal.a, 0))                                //a == 0
+    Solve_Line(coef_formal, root_formal_common);
+  else                                                                       //a != 0
+    Solve_Square(coef_formal, root_formal_common);
+}
 
 void Solve_Line (const COEFFICIENT coef_formal_l, ROOTS * const root_line)
   {
@@ -64,7 +64,7 @@ int Compare_doubles (const double q, const double r)
 double Rounding_doubles (const double t)
   {
     assert (isfinite(t));
-    return (round(t * test_precision) / test_precision);
+    return (round(t * ) / alpha);
   }
 
 bool Comparison_nan_inf (const double a, const double b, const double c)
